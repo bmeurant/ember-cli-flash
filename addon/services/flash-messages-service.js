@@ -100,6 +100,12 @@ export default Ember.Service.extend({
 
     this[type] = ((message, options={}) => {
       const { timeout, priority, sticky, showProgress } = options;
+	  
+	  // shameful monkey patch to force one message at time because of IE9 bug:
+	  // messages does not disapear anymore if they are plenty (4-5 or more) or
+	  // if several types are invloved at the same type (e.g. one danger and one success)
+	  // To fix that, we force older messages to disapear because we do not need queueing. :-(
+	  this.clearMessages();
 
       return this._addToQueue(merge(options, {
         message,
